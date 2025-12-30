@@ -1,4 +1,4 @@
-"""import argparse
+import argparse
 import sys
 import yfinance as yf
 import pandas as pd
@@ -29,24 +29,5 @@ def main():
 if __name__ == "__main__":
     main()
 #pip install yfinance pandas matplotlib
-#python get_data.py AAPL"""
-class Solution:
-    def isPalindrome(self, x: int) -> bool:
-        if x < 0 or (x % 10 == 0 and x != 0):
-            return False
-
-        reversed_half = 0
-        while x > reversed_half:
-            reversed_half = reversed_half * 10 + x % 10
-            x //= 10
-
-        # For even digit count: x == reversed_half
-        # For odd digit count: x == reversed_half // 10
-        return x == reversed_half or x == reversed_half // 10
-
-# Input from user
-num = int(input())
-solution = Solution()
-result = solution.isPalindrome(num)
-print("true" if result else "false")
+#python get_data.py AAPL
 
