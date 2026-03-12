@@ -74,8 +74,10 @@ def summarize_trend(df, lookback=20):
     else:
         direction = "sideways"
 
+    # Ensure slope is a plain float for formatting
+    slope_val = float(slope) if not isinstance(slope, (float, int)) else slope
     summary = (
-        f"Recent (last {lookback} days) average return ≈ {slope:.4f}. "
+        f"Recent (last {lookback} days) average return ≈ {slope_val:.4f}. "
         f"Short SMA(5) is {sma_short:.2f}, long SMA(20) is {sma_long:.2f} → trend: {direction}."
     )
     return summary
@@ -124,6 +126,7 @@ def main():
     parser.add_argument("--period", default="2y")
     parser.add_argument("--save", action="store_true", help="Save chart and text report")
     parser.add_argument("--retrain", action="store_true", help="Force retrain model")
+    parser.add_argument("--output-dir", default=".", help="Directory to save charts and reports")
     args = parser.parse_args()
 
     df = fetch_data(args.ticker, period=args.period)
@@ -143,8 +146,25 @@ def main():
     print(pred_label)
 
     if args.save:
-        plot_and_save(df, args.ticker, save=True)
-        report_file = f"{args.ticker}_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+        # Ensure output directory exists
+        import os
+        os.makedirs(args.output_dir, exist_ok=True)
+        chart_path = os.path.join(args.output_dir, f"{args.ticker}_chart_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png")
+        plt.figure(figsize=(10,5))
+        plt.plot(df.index, df["Close"], label="Close")
+        if "SMA_5" in df.columns:
+            plt.plot(df.index, df["SMA_5"], label="SMA5")
+        if "SMA_10" in df.columns:
+            plt.plot(df.index, df["SMA_10"], label="SMA10")
+        plt.title(f"{args.ticker} Close Price")
+        plt.xlabel("Date")
+        plt.ylabel("Price")
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(chart_path)
+        print("Chart saved to", chart_path)
+        plt.close()
+        report_file = os.path.join(args.output_dir, f"{args.ticker}_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt")
         make_report_text(args.ticker, trend_summary, pred_label, acc, filename=report_file)
 
 if __name__ == "__main__":

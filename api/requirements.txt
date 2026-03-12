@@ -1,0 +1,10 @@
+flask>=3.0.0
+flask-cors>=4.0.0
+yfinance>=0.2.40
+pandas>=2.0.0
+numpy>=1.26.0
+scikit-learn>=1.4.0
+joblib>=1.3.0
+# Optional – only needed for /api/lstm endpoint:
+# tensorflow==2.15
+# keras==2.15
